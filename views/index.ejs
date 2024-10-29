@@ -5,16 +5,23 @@
     <%- include('./partials/nav.ejs') %>
 
 
-    <div class="container">
+    <div id="itemContainer" class="container">
         <ul class="collection with-header">
             <li class="collection-header"><h4>Items</h4></li>
             <% if(items.length > 0 ) { 
                 items.forEach(item => {
             %>                
-                <li class="collection-item"><div>
-                    <a href="/items/<%= item._id %>"><%=item.name%></a>
-                    <%=item.price%>
-                    <a href="#!" class="secondary-content"><i class="material-icons modal-trigger" href="#edit_item_modal">edit</i></a></div></li>
+                <li class="collection-item">
+                    <div>
+                        <a href="/items/<%= item._id %>"><%=item.name%></a>
+                        <%=item.price%>
+                        <a href="#!" class="secondary-content">
+                            <i class="material-icons" data-id="<%= item._id %>">delete</i>
+                            <i class="material-icons modal-trigger" data-id="<%= item._id %>" href="#edit_item_modal">edit</i>
+                        </a>
+
+                    </div>
+                </li>
             <% 
                 })
             } else { %>
@@ -25,19 +32,66 @@
 
     <div id="edit_item_modal" class="modal">
         <div class="modal-content">
-          <h4>Modal Header</h4>
-          <p>A bunch of text</p>
+          <h4>Edit from</h4>
+            <form id="edit_form" action="">
+                <input type="text" name="name" placeholder="item name"></input>
+                <input type="number" name="price" placeholder="item price"></input>
+                <button class="btn">Update</button>
+            </form>
         </div>
-        <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
+       
     </div>
 
     <script>
-         document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.modal');
             var instances = M.Modal.init(elems);
         });
+
+        edit_form.onsubmit = async function(e) {
+            e.preventDefault();
+            let data = new FormData(edit_form);
+
+            let response = await fetch(`/items/${updateId}`,{
+                method: 'PUT',
+                body: new URLSearchParams(data),
+                header: new Headers({
+                    'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                })
+            })
+
+            let result = await response.json;
+            edit_form.reset();
+            window.location.reload();
+        }
+
+        
+
+
+        itemContainer.onclick = function(e) {
+            console.log(e.target.textContent);
+            if(e.target.textContent ==='edit') {
+                updateId = e.target.getAttribute('data-id');
+                console.log(updateId);
+
+            }
+            if(e.target.textContent ==='delete') {
+                const id = e.target.getAttribute('data-id');
+                console.log(id);
+                const endpoint = `/items/${id}`;
+                fetch(endpoint, {
+                method: 'DELETE'
+
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                window.location.href = data.redirect;
+            })
+            .catch(err=>{console.log(err)})
+            }
+        }
+
     </script>
 </body>
 </html>
