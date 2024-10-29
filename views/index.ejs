@@ -12,9 +12,9 @@
                 items.forEach(item => {
             %>                
                 <li class="collection-item"><div>
-                    <%=item.name%>
+                    <a href="/items/<%= item._id %>"><%=item.name%></a>
                     <%=item.price%>
-                    <a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
+                    <a href="#!" class="secondary-content"><i class="material-icons modal-trigger" href="#edit_item_modal">edit</i></a></div></li>
             <% 
                 })
             } else { %>
@@ -22,6 +22,22 @@
             <% } %>
           </ul>
     </div>
-    
+
+    <div id="edit_item_modal" class="modal">
+        <div class="modal-content">
+          <h4>Modal Header</h4>
+          <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div>
+    </div>
+
+    <script>
+         document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+        });
+    </script>
 </body>
 </html>
